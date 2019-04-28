@@ -1,0 +1,19 @@
+{
+  "name": "happynews",
+  "version": "1.0.0",
+  "description": "No more drama!",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "author": "Youssef Selkani",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "firebase": "^5.10.1",
+    "indico.io": "^0.10.5",
+    "moment": "^2.24.0",
+    "newsapi": "^2.4.0"
+  }
+}
