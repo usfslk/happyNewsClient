@@ -22,19 +22,24 @@ var config = {
 firebase.initializeApp(config);
 
 general()
+tech()
+entertainment()
+
 setInterval(general, 86400001);
+setInterval(tech, 86400001);
+setInterval(entertainment, 86400001);
 
 function general() {
   console.log('Running General Function')
   var stamp = moment().format('l')
   var timestamp = stamp.replace(/\//g, '');
   newsapi.v2.topHeadlines({
-      language: 'en',
-      category: 'general',
-      country: 'us',
-      sortBy: 'publishedAt',
-      page: 1
-    })
+    language: 'en',
+    category: 'general',
+    country: 'us',
+    sortBy: 'publishedAt',
+    page: 1
+  })
     .then(newsObject => {
       var obj = newsObject.articles;
       for (let i in obj) {
@@ -49,19 +54,80 @@ function general() {
                     image: obj[i].urlToImage,
                     url: obj[i].url,
                     publishedAt: obj[i].publishedAt,
-                    scoreTitle: resTitle * 100,
-                    scoreDesc: resDesc * 100,
+                    score: (resTitle + resDesc) * 100,
                   });
-                   console.log('Push ' + i)
+                console.log('Push ' + i)
               })
-          })
-          .catch(
-            function (err) {
-              console.log(error)
-            }
-          );
-      }
-       console.log('200 OK')
+          }).catch(function (err) { console.log(error) });
+      } console.log('General 200 OK')
+    });
+}
+
+function tech() {
+  console.log('Running Tech Function')
+  var stamp = moment().format('l')
+  var timestamp = stamp.replace(/\//g, '');
+  newsapi.v2.topHeadlines({
+    language: 'en',
+    category: 'technology',
+    country: 'us',
+    sortBy: 'publishedAt',
+    page: 1
+  })
+    .then(newsObject => {
+      var obj = newsObject.articles;
+      for (let i in obj) {
+        indico.sentiment(obj[i].title)
+          .then(function (resTitle) {
+            indico.sentiment(obj[i].description)
+              .then(function (resDesc) {
+                firebase.database().ref(`/master/${timestamp}/technology`)
+                  .push({
+                    title: obj[i].title,
+                    description: obj[i].description,
+                    image: obj[i].urlToImage,
+                    url: obj[i].url,
+                    publishedAt: obj[i].publishedAt,
+                    score: (resTitle + resDesc) * 100,
+                  });
+                console.log('Push ' + i)
+              })
+          }).catch(function (err) { console.log(error) });
+      } console.log('Tech 200 OK')
+    });
+}
+
+function entertainment() {
+  console.log('Running Entertainment Function')
+  var stamp = moment().format('l')
+  var timestamp = stamp.replace(/\//g, '');
+  newsapi.v2.topHeadlines({
+    language: 'en',
+    category: 'entertainment',
+    country: 'us',
+    sortBy: 'publishedAt',
+    page: 1
+  })
+    .then(newsObject => {
+      var obj = newsObject.articles;
+      for (let i in obj) {
+        indico.sentiment(obj[i].title)
+          .then(function (resTitle) {
+            indico.sentiment(obj[i].description)
+              .then(function (resDesc) {
+                firebase.database().ref(`/master/${timestamp}/entertainment`)
+                  .push({
+                    title: obj[i].title,
+                    description: obj[i].description,
+                    image: obj[i].urlToImage,
+                    url: obj[i].url,
+                    publishedAt: obj[i].publishedAt,
+                    score: (resTitle + resDesc) * 100,
+                  });
+                console.log('Push ' + i)
+              })
+          }).catch(function (err) { console.log(error) });
+      } console.log('Entertainment 200 OK')
     });
 }
 
